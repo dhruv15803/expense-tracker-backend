@@ -2,6 +2,7 @@ import { User } from "../models/users.models.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import fs from 'fs'
 dotenv.config({
   path: "../.env",
 });
@@ -69,6 +70,7 @@ const registerUser = async (req, res) => {
       success: true,
       message: "successfully registered user",
     });
+    fs.unlinkSync(req.file.path);
   } catch (error) {
     console.log(error);
   }
@@ -289,6 +291,8 @@ try {
             "success":true,
             url,
         })
+        fs.unlinkSync(req.file.path);
+        
 } catch (error) {
     console.log(error);
 }
