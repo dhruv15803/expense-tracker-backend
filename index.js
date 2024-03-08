@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-import { getLoggedInUser, loginUser, logoutUser, registerUser } from './controllers/users.controllers.js'
+import { editUser, getLoggedInUser, loginUser, logoutUser, registerUser } from './controllers/users.controllers.js'
 
 dotenv.config({
     path:'./.env'
@@ -35,6 +35,7 @@ app.post('/user/registerUser',registerUser);
 app.post('/user/loginUser',loginUser);
 app.get('/user/getLoggedInUser',getLoggedInUser);
 app.get('/user/logoutUser',logoutUser);
+app.patch('/user/editUser',editUser);
 
 
 app.listen(process.env.PORT,()=>{

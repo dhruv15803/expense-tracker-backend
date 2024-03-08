@@ -6,7 +6,6 @@ dotenv.config({
     path:"../.env"
 })
 
-
 const registerUser = async (req,res) => {
 try {
         const {username,email,password} = req.body;
@@ -177,8 +176,49 @@ try {
         })
 } catch (error) {
     console.log(error);
+ }
+}
+
+const editUser = async (req,res) => {
+try {
+        const {newUsername,newPassword} = req.body;
+        // need to be logged in to change username and password
+        if(!req.cookies?.accessToken){
+            res.status(400).json({
+                "success":false,
+                "message":"user not logged in"
+            })
+            return;
+        }
+        //get logged in user
+        const decodedToken = jwt.verify(req.cookies?.accessToken,process.env.JWT_SECRET);
+        if(!decodedToken){
+            res.status(500).json({
+                "sucess":false,
+                "message":"jwt error"
+            })
+            return;
+        } 
+        // username can only be changed when no other username in db clashes with the newUsername
+        const user = await User.findOne({username:newUsername});
+        if(user){
+            res.status(400).json({
+                "success":false,
+                "message":"new username already taken"
+            })
+            return;
+        }
+        // hashing new password
+        const hashedPassword = await bcrypt.hash(newPassword,10);
+        await User.updateOne({_id:decodedToken._id},{$set:{username:newUsername,password:hashedPassword}})
+        res.status(200).json({
+            "success":true,
+            "message":"successfully updated user"
+        })
+} catch (error) {
+    console.log(error);
 }
 }
 
 
-export {registerUser,loginUser,getLoggedInUser,logoutUser};
+export {registerUser,loginUser,getLoggedInUser,logoutUser,editUser};
