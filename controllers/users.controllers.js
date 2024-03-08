@@ -2,19 +2,18 @@ import { User } from "../models/users.models.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import fs from 'fs'
+import fs from "fs";
 dotenv.config({
   path: "../.env",
 });
 
-import {v2 as cloudinary} from 'cloudinary';
-          
-cloudinary.config({ 
-  cloud_name: 'dqcptinzd', 
-  api_key: '792156251912376', 
-  api_secret: 'jkxJ8U74dhrEtqWczC3_aTczQrw' 
-});
+import { v2 as cloudinary } from "cloudinary";
 
+cloudinary.config({
+  cloud_name: "dqcptinzd",
+  api_key: "792156251912376",
+  api_secret: "jkxJ8U74dhrEtqWczC3_aTczQrw",
+});
 
 const registerUser = async (req, res) => {
   try {
@@ -31,9 +30,9 @@ const registerUser = async (req, res) => {
       return;
     }
     console.log(req.file);
-    const avatarUrl = await cloudinary.uploader.upload(req.file.path,{
-        resource_type:'auto'
-    })
+    const avatarUrl = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "auto",
+    });
     console.log(avatarUrl.url);
     // checking if user already is registered
     const user = await User.findOne({
@@ -54,7 +53,7 @@ const registerUser = async (req, res) => {
       username: username.toLowerCase(),
       email: email.toLowerCase(),
       password: hashedPassword,
-      avatar:avatarUrl.url,
+      avatar: avatarUrl.url,
     });
     console.log(newUser);
     // checking if user is correctly inserted in the users db
@@ -75,10 +74,6 @@ const registerUser = async (req, res) => {
     console.log(error);
   }
 };
-
-
-
-
 
 const loginUser = async (req, res) => {
   try {
@@ -267,36 +262,120 @@ const editUser = async (req, res) => {
   }
 };
 
-const getAvatarUrl = async (req,res) => {
+const getAvatarUrl = async (req, res) => {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        success: false,
+        message: "file not uploaded",
+      });
+      return;
+    }
+    console.log(req.file);
+    const { url } = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "auto",
+    });
+    if (!url) {
+      res.status(500).json({
+        success: false,
+        message: "cloudinary error",
+      });
+      return;
+    }
+    res.status(200).json({
+      success: true,
+      url,
+    });
+    fs.unlinkSync(req.file.path);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+const editUsername = async (req,res) => {
 try {
-        if(!req.file) {
+        const {newUsername }  = req.body;
+        if(!req.cookies?.accessToken) {
             res.status(400).json({
                 "success":false,
-                "message":"file not uploaded"
+                "message":"user not logged in"
             })
             return;
         }
-        console.log(req.file);
-        const {url} = await cloudinary.uploader.upload(req.file.path,{
-            resource_type:"auto"
-        })
-        if(!url) {
+        const decodedToken = jwt.verify(req.cookies?.accessToken,process.env.JWT_SECRET);
+        if(!decodedToken){
             res.status(500).json({
                 "success":false,
-                "message":"cloudinary error"
+                "message":"jwt error"
             })
             return;
         }
+        // check if user with new username doesn't exist
+        const user = await User.findOne({username:newUsername.toLowerCase()});
+        if(user) {
+            res.status(400).json({
+                "success":false,
+                "message":"username already exists"
+            })
+            return;
+        }
+        await User.updateOne({_id:decodedToken._id},{$set:{username:newUsername.toLowerCase()}})
+        // updated user
+        const updatedUser = await User.findOne({_id:decodedToken._id})
         res.status(200).json({
             "success":true,
-            url,
+            "message":"successfully updated username",
+            updatedUser,
         })
-        fs.unlinkSync(req.file.path);
-        
 } catch (error) {
     console.log(error);
 }
 }
 
 
-export { registerUser, loginUser, getLoggedInUser, logoutUser, editUser,getAvatarUrl };
+const editPassword = async (req,res) => {
+try {
+        const {newPassword} = req.body;
+        if(!req.cookies?.accessToken) {
+            res.status(400).json({
+                "success":false,
+                "message":"user not logged in"
+            })
+            return;
+        }
+        const decodedToken = jwt.verify(req.cookies?.accessToken,process.env.JWT_SECRET);
+        if(!decodedToken){
+            res.status(500).json({
+                "success":false,
+                "message":"jwt error"
+            })
+            return;
+        }
+        const hashedNewPassword = await bcrypt.hash(newPassword,10);
+        await User.updateOne({_id:decodedToken._id},{$set:{password:hashedNewPassword}});
+        // sending user with updated password in response
+        const user = await User.findOne({_id:decodedToken._id});
+        res.status(200).json({
+            "success":true,
+            "message":"successfully updated password",
+            user,
+        })
+} catch (error) {
+    console.log(error);
+}
+}
+
+
+
+
+export {
+  registerUser,
+  loginUser,
+  getLoggedInUser,
+  logoutUser,
+  editUser,
+  getAvatarUrl,
+  editUsername,
+  editPassword
+};
