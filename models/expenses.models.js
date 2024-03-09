@@ -10,7 +10,7 @@ const expenseSchema = new mongoose.Schema({
         type:mongoose.Schema.Type.ObjectId,
         ref:"ExpenseCategory",
     },
-    amount: {
+    expenseAmount: {
         type:Number,
         required:true,
     },

@@ -1,12 +1,16 @@
 import mongoose from 'mongoose'
 
 const expenseCategorySchema = new mongoose.Schema({
-
     name:{
         type:String,
         required:true,
         unique:true,
+        lowercase:true,
+    },
+    userId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
     }
 },{timestamps:true})
 
-export const ExpenseCategory = mongoose.model('Expense',expenseCategorySchema);
+export const ExpenseCategory = mongoose.model('ExpenseCategory',expenseCategorySchema);
