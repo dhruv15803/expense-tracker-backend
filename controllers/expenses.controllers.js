@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { ExpenseCategory } from '../models/expenseCategory.models.js';
+import { Expense } from '../models/expenses.models.js';
 
 
 // add expenseCategory controller
@@ -88,10 +89,53 @@ try {
 
 
 
+const addExpense = async (req,res) => {
+try {
+        const {expenseTitle,expenseCategory,expenseAmount} = req.body;
+        // need userId of logged in user
+        if(!req.cookies?.accessToken){
+            res.status(400).json({
+                "success":false,
+                "message":"user is not logged in "
+            })
+            return;
+        }
+        const decodedToken = jwt.verify(req.cookies?.accessToken,process.env.JWT_SECRET);
+        if(!decodedToken){
+            res.status(500).json({
+                "success":false,
+                "message":"jwt errror"
+            })
+            return;
+        }
+        if(expenseTitle.trim()==="" || expenseAmount===0){
+            res.status(400).json({
+                "success":false,
+                "message":"expense title is required and amount cannot be 0"
+            })
+            return;
+        }
+    
+        // get expenseCategoryId
+        const category = await ExpenseCategory.findOne({name:expenseCategory,userId:decodedToken._id});
+    
+        const expense = await Expense.create({expenseTitle,expenseAmount,expenseCategoryId:category._id,userId:decodedToken._id});
+        res.status(201).json({
+            "success":true,
+            "message":"successfully added expense",
+            expense,
+        })
+} catch (error) {
+    console.log(error);
+}
+}
+
+
 
 export {
     addExpenseCategory,
     getExpenseCategories,
+    addExpense,
 }
 
 
