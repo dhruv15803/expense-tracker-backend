@@ -2,6 +2,14 @@ import mongoose from 'mongoose'
 
 
 const expenseSchema = new mongoose.Schema({
+    expenseTitle: {
+        type:String,
+        required:true,
+    },
+    expenseCategoryId: {
+        type:mongoose.Schema.Type.ObjectId,
+        ref:"ExpenseCategory",
+    },
     amount: {
         type:Number,
         required:true,

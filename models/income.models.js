@@ -6,6 +6,14 @@ const incomeSchema = new mongoose.Schema({
         type:Number,
         required:true,
     },
+    incomeTitle:{
+        type:String,
+        required:true,
+    },
+    incomeStreamId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"IncomeStream",
+    },
     userId: {
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"

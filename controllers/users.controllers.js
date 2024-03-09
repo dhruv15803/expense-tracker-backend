@@ -296,6 +296,13 @@ const getAvatarUrl = async (req, res) => {
 const editUsername = async (req,res) => {
 try {
         const {newUsername }  = req.body;
+        if(newUsername.trim()===""){
+          res.status(400).json({
+            "success":true,
+            "message":"username field is required"
+          })
+          return;
+        }
         if(!req.cookies?.accessToken) {
             res.status(400).json({
                 "success":false,
@@ -337,6 +344,13 @@ try {
 const editPassword = async (req,res) => {
 try {
         const {newPassword} = req.body;
+        if(newPassword.trim()===""){
+          res.status(400).json({
+            "success":false,
+            "message":"password field is required"
+          })
+          return;
+        }
         if(!req.cookies?.accessToken) {
             res.status(400).json({
                 "success":false,
@@ -366,7 +380,51 @@ try {
 }
 }
 
+const editAvatar = async (req,res) => {
 
+try {
+    if(!req.cookies?.accessToken) {
+      res.status(400).json({
+          "success":false,
+          "message":"user not logged in"
+      })
+      return;
+  }
+  const decodedToken = jwt.verify(req.cookies?.accessToken,process.env.JWT_SECRET);
+  if(!decodedToken){
+      res.status(500).json({
+          "success":false,
+          "message":"jwt error"
+      })
+      return;
+  }
+
+  if(!req.file){
+    res.status(400).json({
+      "success":false,
+      "message":"no new avatar file"
+    })
+    return;
+  }
+
+  console.log(req.file.path);
+  const {url} = await cloudinary.uploader.upload(req.file.path,{
+    resource_type:"auto"
+  })
+  
+  await User.updateOne({_id:decodedToken._id},{$set:{avatar:url}});
+  const newUser = await User.findOne({_id:decodedToken._id});
+  res.status(200).json({
+    "success":true,
+    "message":"successfully updated user avatar",
+    user:newUser,
+  })
+  fs.unlinkSync(req.file.path);
+} catch (error) {
+  console.log(error);
+}
+
+}
 
 
 export {
@@ -377,5 +435,6 @@ export {
   editUser,
   getAvatarUrl,
   editUsername,
-  editPassword
+  editPassword,
+  editAvatar
 };

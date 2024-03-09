@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import {
+  editAvatar,
     editPassword,
   editUser,
   editUsername,
@@ -60,6 +61,7 @@ app.patch("/user/editUser", editUser);
 app.post("/user/getAvatar", upload.single("avatar"), getAvatarUrl);
 app.patch('/user/editUsername',editUsername);
 app.patch('/user/editPassword',editPassword);
+app.patch('/user/editAvatar',upload.single('newAvatar'),editAvatar);
 
 
 app.listen(process.env.PORT, () => {
