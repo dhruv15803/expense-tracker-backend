@@ -356,8 +356,51 @@ try {
 } catch (error) {
   console.log(error);
 }
-
 }
+
+const getSortedExpensesByDate = async (req,res)=>{
+try {
+    const {sortDate} = req.body;
+    // sortDate = 1 => oldest to newest(ascending)
+    // sortDate = 0 => expenses list as it is in database
+    // sortDate = -1 => newest to oldest(descending)
+    if (!req.cookies?.accessToken) {
+      res.status(400).json({
+        success: false,
+        message: "user is not logged in",
+      });
+      return;
+    }
+    const decodedToken = jwt.verify(
+      req.cookies?.accessToken,
+      process.env.JWT_SECRET
+    );
+    if (!decodedToken) {
+      res.status(500).json({
+        success: false,
+        message: "jwt error",
+      });
+      return;
+    }
+    if(Number(sortDate)===0){
+      const expenses = await Expense.find({userId:decodedToken._id});
+      res.status(200).json({
+        "success":true,
+        expenses,
+      })
+      return;
+    }
+    const expenses = await Expense.find({userId:decodedToken._id}).sort({expenseDate:Number(sortDate)});
+    res.status(200).json({
+      "success":true,
+      expenses,
+    })
+  }
+ catch (error) {
+  console.log(error);
+}
+}
+
 
 
 
@@ -370,4 +413,5 @@ export {
   getExpenseCategoryNameById,
   updateExpense,
   getSortedExpenses,
-};
+  getSortedExpensesByDate,
+}
