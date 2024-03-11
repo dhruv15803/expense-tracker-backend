@@ -318,6 +318,48 @@ try {
 }
 }
 
+const getSortedExpenses = async (req,res) => {
+try {
+    const {sortExpense} = req.body;
+    // expenses for logged in user, 
+    if (!req.cookies?.accessToken) {
+      res.status(400).json({
+        success: false,
+        message: "user is not logged in",
+      });
+      return;
+    }
+    const decodedToken = jwt.verify(
+      req.cookies?.accessToken,
+      process.env.JWT_SECRET
+    );
+    if (!decodedToken) {
+      res.status(500).json({
+        success: false,
+        message: "jwt error",
+      });
+      return;
+    }
+    if(Number(sortExpense)===0){
+      const expenses = await Expense.find({userId:decodedToken._id});
+      res.status(200).json({
+        "success":true,
+        expenses,
+      })
+      return;
+    }
+    const expenses = await Expense.find({userId:decodedToken._id}).sort({expenseAmount:Number(sortExpense)})
+    res.status(200).json({
+      "success":true,
+      expenses,
+    })
+} catch (error) {
+  console.log(error);
+}
+
+}
+
+
 
 export {
   addExpenseCategory,
@@ -327,4 +369,5 @@ export {
   deleteExpense,
   getExpenseCategoryNameById,
   updateExpense,
+  getSortedExpenses,
 };
