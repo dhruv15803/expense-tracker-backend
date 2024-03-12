@@ -219,10 +219,78 @@ const deleteIncome = async (req, res) => {
       });
       return;
     }
-    await Income.deleteOne({_id: id, userId: decodedToken._id });
+    await Income.deleteOne({ _id: id, userId: decodedToken._id });
     res.status(200).json({
       success: true,
       message: "successfully deleted income",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const updateIncome = async (req, res) => {
+  try {
+    const {
+      newIncomeTitle,
+      newIncomeAmount,
+      newIncomeCategory,
+      newIncomeDate,
+      id,
+    } = req.body;
+    if (
+      newIncomeTitle.trim() === "" ||
+      Number(newIncomeAmount) === 0 ||
+      newIncomeDate === ""
+    ) {
+      res.status(200).json({
+        success: false,
+        message: "all fields are neccessary",
+      });
+      return;
+    }
+    if (!req.cookies?.accessToken) {
+      res.status(400).json({
+        success: false,
+        message: "user is not logged in",
+      });
+      return;
+    }
+    const decodedToken = jwt.verify(
+      req.cookies?.accessToken,
+      process.env.JWT_SECRET
+    );
+    if (!decodedToken) {
+      res.status(500).json({
+        success: false,
+        message: "jwt error",
+      });
+      return;
+    }
+    //   get categoryId for new income category
+    const category = await IncomeCategory.findOne({
+      name: newIncomeCategory,
+      userId: decodedToken._id,
+    });
+    const {_id} = category;
+    await Income.updateOne(
+      { _id: id, userId: decodedToken._id },
+      {
+        $set: {
+          incomeTitle: newIncomeTitle,
+          incomeAmount: Number(newIncomeAmount),
+          incomeCategoryId: _id,
+          incomeDate: newIncomeDate,
+        },
+      }
+    );
+    //   updated income
+    const income = await Income.findOne({ _id: id, userId: decodedToken._id });
+
+    res.status(200).json({
+      success: false,
+      message: "updated successfully",
+      income,
     });
   } catch (error) {
     console.log(error);
@@ -236,4 +304,5 @@ export {
   getAllIncomes,
   getIncomeCategoryNameById,
   deleteIncome,
+  updateIncome,
 };

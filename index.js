@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import {
   editAvatar,
-    editPassword,
+  editPassword,
   editUser,
   editUsername,
   getAvatarUrl,
@@ -18,8 +18,26 @@ import {
   registerUser,
 } from "./controllers/users.controllers.js";
 import multer from "multer";
-import { addExpense, addExpenseCategory, deleteExpense, getAllExpenses, getExpenseCategories, getExpenseCategoryNameById, getSortedExpenses, getSortedExpensesByDate, updateExpense } from "./controllers/expenses.controllers.js";
-import { addIncome, addIncomeCategory, deleteIncome, getAllIncomes, getIncomeCategories, getIncomeCategoryNameById } from "./controllers/income.controllers.js";
+import {
+  addExpense,
+  addExpenseCategory,
+  deleteExpense,
+  getAllExpenses,
+  getExpenseCategories,
+  getExpenseCategoryNameById,
+  getSortedExpenses,
+  getSortedExpensesByDate,
+  updateExpense,
+} from "./controllers/expenses.controllers.js";
+import {
+  addIncome,
+  addIncomeCategory,
+  deleteIncome,
+  getAllIncomes,
+  getIncomeCategories,
+  getIncomeCategoryNameById,
+  updateIncome,
+} from "./controllers/income.controllers.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -61,30 +79,29 @@ app.get("/user/getLoggedInUser", getLoggedInUser);
 app.get("/user/logoutUser", logoutUser);
 app.patch("/user/editUser", editUser);
 app.post("/user/getAvatar", upload.single("avatar"), getAvatarUrl);
-app.patch('/user/editUsername',editUsername);
-app.patch('/user/editPassword',editPassword);
-app.patch('/user/editAvatar',upload.single('newAvatar'),editAvatar);
-
+app.patch("/user/editUsername", editUsername);
+app.patch("/user/editPassword", editPassword);
+app.patch("/user/editAvatar", upload.single("newAvatar"), editAvatar);
 
 // expenses routes
-app.post('/expense/addExpenseCategory',addExpenseCategory);
-app.get('/expense/getExpenseCategories',getExpenseCategories);
-app.post('/expense/add',addExpense);
-app.get('/expense/getAllExpenses',getAllExpenses);
-app.post('/expense/deleteExpense',deleteExpense);
-app.post('/expense/getExpenseCategoryNameById',getExpenseCategoryNameById);
-app.patch('/expense/updateExpense',updateExpense);
-app.post('/expense/getSortedExpenses',getSortedExpenses);
-app.post('/expense/getSortedExpensesByDate',getSortedExpensesByDate);
-
+app.post("/expense/addExpenseCategory", addExpenseCategory);
+app.get("/expense/getExpenseCategories", getExpenseCategories);
+app.post("/expense/add", addExpense);
+app.get("/expense/getAllExpenses", getAllExpenses);
+app.post("/expense/deleteExpense", deleteExpense);
+app.post("/expense/getExpenseCategoryNameById", getExpenseCategoryNameById);
+app.patch("/expense/updateExpense", updateExpense);
+app.post("/expense/getSortedExpenses", getSortedExpenses);
+app.post("/expense/getSortedExpensesByDate", getSortedExpensesByDate);
 
 // income routes
-app.post('/income/addIncomeCategory',addIncomeCategory);
-app.get('/income/getIncomeCategories',getIncomeCategories);
-app.post('/income/add',addIncome);
-app.get('/income/getAllIncomes',getAllIncomes);
-app.post('/income/getIncomeCategoryNameById',getIncomeCategoryNameById);
-app.post('/income/delete',deleteIncome);
+app.post("/income/addIncomeCategory", addIncomeCategory);
+app.get("/income/getIncomeCategories", getIncomeCategories);
+app.post("/income/add", addIncome);
+app.get("/income/getAllIncomes", getAllIncomes);
+app.post("/income/getIncomeCategoryNameById", getIncomeCategoryNameById);
+app.post("/income/delete", deleteIncome);
+app.post("/income/updateIncome", updateIncome);
 
 app.listen(process.env.PORT, () => {
   console.log(`server running at http://localhost:${process.env.PORT}`);
