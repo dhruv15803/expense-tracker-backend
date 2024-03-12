@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 
-const incomeStreamSchema = new mongoose.Schema({
+const incomeCategorySchema = new mongoose.Schema({
     name:{
         type:String,
         required:true,
@@ -15,7 +15,7 @@ const incomeStreamSchema = new mongoose.Schema({
 },{timestamps:true})
 
 
-export const IncomeStream = mongoose.model('IncomeStream',incomeStreamSchema);
+export const IncomeCategory = mongoose.model('IncomeCategory',incomeCategorySchema);
 
 
 

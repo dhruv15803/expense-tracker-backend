@@ -19,6 +19,7 @@ import {
 } from "./controllers/users.controllers.js";
 import multer from "multer";
 import { addExpense, addExpenseCategory, deleteExpense, getAllExpenses, getExpenseCategories, getExpenseCategoryNameById, getSortedExpenses, getSortedExpensesByDate, updateExpense } from "./controllers/expenses.controllers.js";
+import { addIncome, addIncomeCategory, getAllIncomes, getIncomeCategories, getIncomeCategoryNameById } from "./controllers/income.controllers.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -75,6 +76,14 @@ app.post('/expense/getExpenseCategoryNameById',getExpenseCategoryNameById);
 app.patch('/expense/updateExpense',updateExpense);
 app.post('/expense/getSortedExpenses',getSortedExpenses);
 app.post('/expense/getSortedExpensesByDate',getSortedExpensesByDate);
+
+
+// income routes
+app.post('/income/addIncomeCategory',addIncomeCategory);
+app.get('/income/getIncomeCategories',getIncomeCategories);
+app.post('/income/add',addIncome);
+app.get('/income/getAllIncomes',getAllIncomes);
+app.post('/income/getIncomeCategoryNameById',getIncomeCategoryNameById);
 
 app.listen(process.env.PORT, () => {
   console.log(`server running at http://localhost:${process.env.PORT}`);

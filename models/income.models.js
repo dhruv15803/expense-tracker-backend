@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 
 const incomeSchema = new mongoose.Schema({
-    amount:{
+    incomeAmount:{
         type:Number,
         required:true,
     },
@@ -10,9 +10,13 @@ const incomeSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    incomeStreamId:{
+    incomeCategoryId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"IncomeStream",
+    },
+    incomeDate:{
+        type:String,
+        required:true,
     },
     userId: {
         type:mongoose.Schema.Types.ObjectId,
