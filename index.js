@@ -19,7 +19,7 @@ import {
 } from "./controllers/users.controllers.js";
 import multer from "multer";
 import { addExpense, addExpenseCategory, deleteExpense, getAllExpenses, getExpenseCategories, getExpenseCategoryNameById, getSortedExpenses, getSortedExpensesByDate, updateExpense } from "./controllers/expenses.controllers.js";
-import { addIncome, addIncomeCategory, getAllIncomes, getIncomeCategories, getIncomeCategoryNameById } from "./controllers/income.controllers.js";
+import { addIncome, addIncomeCategory, deleteIncome, getAllIncomes, getIncomeCategories, getIncomeCategoryNameById } from "./controllers/income.controllers.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -84,6 +84,7 @@ app.get('/income/getIncomeCategories',getIncomeCategories);
 app.post('/income/add',addIncome);
 app.get('/income/getAllIncomes',getAllIncomes);
 app.post('/income/getIncomeCategoryNameById',getIncomeCategoryNameById);
+app.post('/income/delete',deleteIncome);
 
 app.listen(process.env.PORT, () => {
   console.log(`server running at http://localhost:${process.env.PORT}`);
