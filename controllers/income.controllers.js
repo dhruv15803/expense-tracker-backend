@@ -272,7 +272,7 @@ const updateIncome = async (req, res) => {
       name: newIncomeCategory,
       userId: decodedToken._id,
     });
-    const {_id} = category;
+    const { _id } = category;
     await Income.updateOne(
       { _id: id, userId: decodedToken._id },
       {
@@ -297,6 +297,90 @@ const updateIncome = async (req, res) => {
   }
 };
 
+const getSortedIncomes = async (req, res) => {
+  try {
+    const { sortIncome } = req.body;
+    let sortIncomeNum = Number(sortIncome);
+    if (!req.cookies?.accessToken) {
+      res.status(400).json({
+        success: false,
+        message: "user is not logged in",
+      });
+      return;
+    }
+    const decodedToken = jwt.verify(
+      req.cookies?.accessToken,
+      process.env.JWT_SECRET
+    );
+    if (!decodedToken) {
+      res.status(500).json({
+        success: false,
+        message: "jwt error",
+      });
+      return;
+    }
+    if (sortIncomeNum === 0) {
+      const incomes = await Income.find({ userId: decodedToken._id });
+      res.status(200).json({
+        success: true,
+        incomes,
+      });
+      return;
+    }
+    const incomes = await Income.find({ userId: decodedToken._id }).sort({
+      incomeAmount: sortIncomeNum,
+    });
+    res.status(200).json({
+      success: true,
+      incomes,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getSortedIncomesByDate = async (req, res) => {
+  try {
+    const { sortIncomeDate } = req.body;
+    let sortIncomeDateNum = Number(sortIncomeDate);
+    if (!req.cookies?.accessToken) {
+      res.status(400).json({
+        success: false,
+        message: "user is not logged in",
+      });
+      return;
+    }
+    const decodedToken = jwt.verify(
+      req.cookies?.accessToken,
+      process.env.JWT_SECRET
+    );
+    if (!decodedToken) {
+      res.status(500).json({
+        success: false,
+        message: "jwt error",
+      });
+      return;
+    }
+    if (sortIncomeDateNum === 0) {
+      const incomes = await Income.find({ userId: decodedToken._id });
+      res.status(200).json({
+        success: true,
+        incomes,
+      });
+      return;
+    }
+    const incomes = await Income.find({ userId: decodedToken._id }).sort({
+      incomeDate: sortIncomeDateNum,
+    });
+    res.status(200).json({
+      success: true,
+      incomes,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
   addIncomeCategory,
   getIncomeCategories,
@@ -305,4 +389,6 @@ export {
   getIncomeCategoryNameById,
   deleteIncome,
   updateIncome,
+  getSortedIncomes,
+  getSortedIncomesByDate,
 };

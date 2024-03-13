@@ -36,6 +36,8 @@ import {
   getAllIncomes,
   getIncomeCategories,
   getIncomeCategoryNameById,
+  getSortedIncomes,
+  getSortedIncomesByDate,
   updateIncome,
 } from "./controllers/income.controllers.js";
 
@@ -102,6 +104,8 @@ app.get("/income/getAllIncomes", getAllIncomes);
 app.post("/income/getIncomeCategoryNameById", getIncomeCategoryNameById);
 app.post("/income/delete", deleteIncome);
 app.post("/income/updateIncome", updateIncome);
+app.post('/income/getSortedIncomes',getSortedIncomes);
+app.post('/income/getSortedIncomesByDate',getSortedIncomesByDate);
 
 app.listen(process.env.PORT, () => {
   console.log(`server running at http://localhost:${process.env.PORT}`);
