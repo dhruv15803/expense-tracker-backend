@@ -22,6 +22,7 @@ import {
   addExpense,
   addExpenseCategory,
   deleteExpense,
+  deleteExpenseCategory,
   getAllExpenses,
   getExpenseCategories,
   getExpenseCategoryNameById,
@@ -33,6 +34,7 @@ import {
   addIncome,
   addIncomeCategory,
   deleteIncome,
+  deleteIncomeCategory,
   getAllIncomes,
   getIncomeCategories,
   getIncomeCategoryNameById,
@@ -95,6 +97,7 @@ app.post("/expense/getExpenseCategoryNameById", getExpenseCategoryNameById);
 app.patch("/expense/updateExpense", updateExpense);
 app.post("/expense/getSortedExpenses", getSortedExpenses);
 app.post("/expense/getSortedExpensesByDate", getSortedExpensesByDate);
+app.post('/expense/deleteExpenseCategory',deleteExpenseCategory);
 
 // income routes
 app.post("/income/addIncomeCategory", addIncomeCategory);
@@ -106,6 +109,7 @@ app.post("/income/delete", deleteIncome);
 app.post("/income/updateIncome", updateIncome);
 app.post('/income/getSortedIncomes',getSortedIncomes);
 app.post('/income/getSortedIncomesByDate',getSortedIncomesByDate);
+app.post('/income/deleteIncomeCategory',deleteIncomeCategory);
 
 app.listen(process.env.PORT, () => {
   console.log(`server running at http://localhost:${process.env.PORT}`);

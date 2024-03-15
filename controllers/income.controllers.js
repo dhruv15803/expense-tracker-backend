@@ -167,7 +167,7 @@ const getIncomeCategoryNameById = async (req, res) => {
   try {
     const { incomeCategoryId } = req.body;
     if(incomeCategoryId==="none"){
-      res.status(400).json({
+      res.json({
         "success":false,
         "message":"id cannot be a string",
         categoryName: "none",
@@ -389,6 +389,56 @@ const getSortedIncomesByDate = async (req, res) => {
   }
 };
 
+const deleteIncomeCategory = async (req,res)=>{
+try {
+    const {id} = req.body;
+    if (!req.cookies?.accessToken) {
+      res.status(400).json({
+        success: false,
+        message: "user is not logged in",
+      });
+      return;
+    }
+    const decodedToken = jwt.verify(
+      req.cookies?.accessToken,
+      process.env.JWT_SECRET
+    );
+    if (!decodedToken) {
+      res.status(500).json({
+        success: false,
+        message: "jwt error",
+      });
+      return;
+    }
+
+    // cannot delete category if income exists of that category
+    // checking if income exists
+    const income = await Income.findOne({incomeCategoryId:id,userId:decodedToken._id});
+    if(income){
+      res.status(400).json({
+        "success":true,
+        "message":"income of this category exists"
+      })
+      return;
+    }
+    await IncomeCategory.deleteOne({_id:id,userId:decodedToken._id});
+    const category = await IncomeCategory.findOne({_id:id,userId:decodedToken._id});
+    if(category){
+      res.status(500).json({
+        "success":false,
+        "message":"something went wrong when deleting category"
+      })
+      return;
+    }
+    res.status(200).json({
+      "success":true,
+      "message":"successfully deleted category"
+    })
+} catch (error) {
+  console.log(error);
+}
+}
+
 export {
   addIncomeCategory,
   getIncomeCategories,
@@ -399,4 +449,5 @@ export {
   updateIncome,
   getSortedIncomes,
   getSortedIncomesByDate,
+  deleteIncomeCategory,
 };

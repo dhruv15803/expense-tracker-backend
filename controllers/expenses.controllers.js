@@ -401,7 +401,52 @@ try {
 }
 }
 
+const deleteExpenseCategory = async (req,res)=>{
+try {
+    const {id} = req.body;
+     // sortDate = -1 => newest to oldest(descending)
+     if (!req.cookies?.accessToken) {
+      res.status(400).json({
+        success: false,
+        message: "user is not logged in",
+      });
+      return;
+    }
+    const decodedToken = jwt.verify(
+      req.cookies?.accessToken,
+      process.env.JWT_SECRET
+    );
+    if (!decodedToken) {
+      res.status(500).json({
+        success: false,
+        message: "jwt error",
+      });
+      return;
+    }
+    // check if expenses of following categoryId exist
+    const expense = await Expense.findOne({expenseCategoryId:id,userId:decodedToken._id});
+    if(expense){
+      res.status(400).json({
+        "success":false,
+        "message":"expense of this category exists"
+      })
+      return;
+    }
+    await ExpenseCategory.deleteOne({_id:id,userId:decodedToken._id});
+    res.status(200).json({
+      "success":true,
+      "message":"successfully delete expense category"
+    })
+} catch (error) {
+  console.log(error);
+}
 
+
+
+
+
+
+}
 
 
 export {
@@ -414,4 +459,5 @@ export {
   updateExpense,
   getSortedExpenses,
   getSortedExpensesByDate,
+  deleteExpenseCategory,
 }
