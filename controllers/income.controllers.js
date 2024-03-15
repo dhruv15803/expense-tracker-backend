@@ -166,6 +166,14 @@ const getAllIncomes = async (req, res) => {
 const getIncomeCategoryNameById = async (req, res) => {
   try {
     const { incomeCategoryId } = req.body;
+    if(incomeCategoryId==="none"){
+      res.status(400).json({
+        "success":false,
+        "message":"id cannot be a string",
+        categoryName: "none",
+      })
+      return;
+    }
     if (!req.cookies?.accessToken) {
       res.status(400).json({
         success: false,
